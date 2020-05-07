@@ -62,10 +62,21 @@ fn main() {
                 .help("The destination server")
                 .required(true),
         )
+        .arg(
+            Arg::with_name("requests")
+                .short("e")
+                .long("request")
+                .value_name("NUM")
+                .takes_value(true)
+                .help("Number of request to send to the server")
+                .required(true),
+        )
         .get_matches();
     let port = matches.value_of("port").unwrap();
     let destination = matches.value_of("DEST").unwrap();
     let proxy = matches.value_of("proxy");
+    let iterations = matches.value_of("requests").unwrap();
+    let iter: i32 = iterations.parse().unwrap();
 
     let socket = UdpSocket::bind(format!("0.0.0.0:{}", port))
         .expect("Unable to bind to port");
@@ -81,7 +92,7 @@ fn main() {
     )
     .expect("Unable to build security context");
     // Start making OSCORE requests
-    oscore_requests(&socket, destination, proxy, &mut oscore);
+    oscore_requests(&socket, destination, proxy, &mut oscore, iter);
 }
 
 /// Does an EDHOC exchange with the given destination.
@@ -181,19 +192,13 @@ fn oscore_requests(
     destination: &str,
     proxy: Option<&str>,
     oscore: &mut SecurityContext,
+    iterations: i32,
 ) {
-    for i in 0.. {
-        // Build a CoAP request to one of the two resources
-        let coap = if i % 2 == 0 {
-            build_resource_request(destination, proxy, b"hello".to_vec(), None)
-        } else {
-            build_resource_request(
-                destination,
-                proxy,
-                b"echo".to_vec(),
-                Some(format!("Iteration {}", i).as_bytes().to_vec()),
-            )
-        };
+    //let i = 0;
+    //while i <= iterations {
+    for i in 0..iterations {
+        // Build a CoAP request
+        let coap = build_resource_request(destination, proxy, b"echo".to_vec(), Some(format!("Iteration {}", i).as_bytes().to_vec()), );
 
         // Protect it with OSCORE
         let protected =
