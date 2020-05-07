@@ -41,7 +41,7 @@ $ cargo build
 And run it:
 
 ```console
-$ ./target/debug/client
+$ ./target/debug/desktop-client
 ```
 
 ### Running the server 
@@ -54,6 +54,6 @@ $ cargo build
 And run it:
 
 ```console
-$ ./target/debug/server
+$ ./target/debug/desktop-server
 ```
 
